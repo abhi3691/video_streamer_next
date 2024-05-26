@@ -18,7 +18,7 @@ if (!fs.existsSync(hlsDir)) {
 
 const pump = promisify(pipeline);
 
-export async function POST(req: Request) {
+export async function POST(req: Request, res: Response) {
   try {
     const formData = await req.formData();
     const file: any = formData.getAll("video")[0];
