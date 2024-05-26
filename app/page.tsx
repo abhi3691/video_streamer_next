@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 export default function AdminPanel() {
@@ -31,23 +31,21 @@ export default function AdminPanel() {
     }
   };
 
-  useEffect(() => {
-    loadVideos(true);
-  }, []);
-
-  const loadVideos = async (isIntial: boolean) => {
+  const loadVideos = useCallback(async (isInitial: boolean) => {
     try {
       const response: any = await axios.get("/api/videos");
       setUploadedVideos(response?.data?.urls);
-      if (isIntial === true) {
-        if (response?.data?.urls?.length) {
-          playVideo(response?.data?.urls[0]);
-        }
+      if (isInitial && response?.data?.urls?.length) {
+        playVideo(response?.data?.urls[0]);
       }
     } catch (error) {
       console.error("Error fetching videos:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadVideos(true);
+  }, [loadVideos]);
 
   const playVideo = (videoUrl: string) => {
     setSelectedVideo(videoUrl);
