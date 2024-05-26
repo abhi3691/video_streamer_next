@@ -18,7 +18,7 @@ if (!fs.existsSync(hlsDir)) {
 
 const pump = promisify(pipeline);
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request): Promise<Response> {
   try {
     const formData = await req.formData();
     const file: any = formData.getAll("video")[0];
@@ -42,7 +42,7 @@ export async function POST(req: Request, res: Response) {
       });
     });
 
-    const hasAudio: any = metadata.streams.some(
+    const hasAudio: boolean = metadata.streams.some(
       (stream: any) => stream.codec_type === "audio"
     );
 
