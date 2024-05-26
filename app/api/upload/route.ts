@@ -5,8 +5,8 @@ import { promisify } from "util";
 import Ffmpeg from "fluent-ffmpeg";
 import path from "path";
 
-const uploadDir = "./public/upload/";
-const hlsDir = "./public/hls/";
+const uploadDir = path.join(__dirname, "uploads");
+const hlsDir = path.join(__dirname, "hls");
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
@@ -23,7 +23,7 @@ export async function POST(req: Request): Promise<Response> {
     const formData = await req.formData();
     const file: any = formData.getAll("video")[0];
 
-    const videoPath = `${uploadDir}${file.name}`;
+    const videoPath = `${uploadDir}/${file.name}`;
     const outputDir = path.join(hlsDir, path.parse(file.name).name);
 
     if (!fs.existsSync(outputDir)) {
@@ -42,7 +42,7 @@ export async function POST(req: Request): Promise<Response> {
       });
     });
 
-    const hasAudio: boolean = metadata.streams.some(
+    const hasAudio: any = metadata.streams.some(
       (stream: any) => stream.codec_type === "audio"
     );
 
@@ -74,7 +74,7 @@ export async function POST(req: Request): Promise<Response> {
         })
         .on("end", () => {
           console.log("Conversion completed successfully.");
-          const hlsUrl = `${outputDir}/index.m3u8`.replace("public/", "");
+          const hlsUrl = `${outputDir}/index.m3u8`;
           resolve(
             NextResponse.json(
               {
