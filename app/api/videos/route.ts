@@ -1,18 +1,13 @@
+import { dbConnect } from "@/app/lib/db";
+import VIdeoModel from "@/app/model/videoschema";
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const hlsDir = path.join(__dirname, "hls");
-
-if (!fs.existsSync(hlsDir)) {
-  fs.mkdirSync(hlsDir);
-}
 
 export async function GET(req: Request, res: Response) {
   try {
-    const files = await fs.promises.readdir(hlsDir);
-    const videoUrls = files.map((file) => `${hlsDir}/${file}/index.m3u8`);
-    return NextResponse.json({ urls: videoUrls });
+    await dbConnect();
+    // Fetch all videos from MongoDB
+    const videos = await VIdeoModel.find({});
+    return NextResponse.json({ urls: [...videos] });
   } catch (error) {
     console.error("Error in handler:", error);
     return NextResponse.json(

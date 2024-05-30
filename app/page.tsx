@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 export default function AdminPanel() {
-  const [uploadedVideos, setUploadedVideos] = useState([]);
+  const [uploadedVideos, setUploadedVideos] = useState<any[]>([]);
   const [selectedVideo, setSelectedVideo] = useState("");
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -19,7 +19,6 @@ export default function AdminPanel() {
 
     try {
       const response = await axios.post("/api/upload", formData);
-      console.log(response.data.url);
       setLoading(false);
       setToastMessage("Video uploaded successfully!");
       loadVideos(false);
@@ -36,7 +35,7 @@ export default function AdminPanel() {
       const response: any = await axios.get("/api/videos");
       setUploadedVideos(response?.data?.urls);
       if (isInitial && response?.data?.urls?.length) {
-        playVideo(response?.data?.urls[0]);
+        playVideo(response?.data?.urls[0].url);
       }
     } catch (error) {
       console.error("Error fetching videos:", error);
@@ -47,7 +46,7 @@ export default function AdminPanel() {
     loadVideos(true);
   }, [loadVideos]);
 
-  const playVideo = (videoUrl: string) => {
+  const playVideo = (videoUrl: any) => {
     setSelectedVideo(videoUrl);
   };
 
@@ -96,8 +95,8 @@ export default function AdminPanel() {
           >
             <option value="">Select a video</option>
             {uploadedVideos.map((videoUrl, index) => (
-              <option key={index} value={videoUrl}>
-                {videoUrl}
+              <option key={index} value={videoUrl?.url}>
+                {videoUrl?.url}
               </option>
             ))}
           </select>
@@ -110,7 +109,6 @@ export default function AdminPanel() {
               controls
               autoPlay
               muted
-              playsInline
               src={selectedVideo}
             ></video>
           )}
